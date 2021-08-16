@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="../static/style/text.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;300;400;500;700;900&display=swap"
+          rel="stylesheet">
+{% endblock %}
+{% block navbar %}
+    {{ super() }}
+{% endblock %}
+{% block body %}
+    {{ super() }}
+
+    <div class="text">
+        {% for paragraph in paragraphs %}
+            <p class="paragraph">{{ paragraph }}</p>
+        {% endfor %}
+    </div>
+    <div class="container">
+        <p id="page-count">Page {{ page_number + 1 }}/{{ page_count }}</p>
+
+    </div>
+{% endblock %}

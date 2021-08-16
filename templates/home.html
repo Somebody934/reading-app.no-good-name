@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block navbar %}
+    {{ super() }}
+{% endblock %}
+{% block body %}
+    {{ super() }}
+    <div class="row" style="padding: 3rem">
+        {% for story in stories %}
+            <div class="col-lg-3 col-sm-6 col-md-4" style="padding: 0.5rem">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ story.split(".")[0] }}</h5>
+                        <a href="{{ url_for("show_story", story_name=story, page_number=1) }}"
+                           class="btn btn-primary">Read</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}
