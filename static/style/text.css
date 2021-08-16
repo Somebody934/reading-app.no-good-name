@@ -1,11 +1,13 @@
 .text {
-    padding: 5% 10%;
+    padding: 4% 10% 2%;
+    font-size: 1.5rem;
 
 }
 .paragraph {
     font-family: 'Noto Sans JP', sans-serif;
 
 }
+
 
 #page-count {
     text-align: center;

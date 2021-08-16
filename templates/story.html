@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block head %}
     {{ super() }}
+    <!-- Google fonts -->
     <link rel="stylesheet" href="../static/style/text.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10,16 +11,62 @@
 {% block navbar %}
     {{ super() }}
 {% endblock %}
+
+{% set popover = '' %}
+
 {% block body %}
     {{ super() }}
-
+    <!-- Text -->
     <div class="text">
         {% for paragraph in paragraphs %}
-            <p class="paragraph">{{ paragraph }}</p>
+            <div><!--
+            -->{% for morph in paragraph %}<!--
+                --><a tabindex="0" data-bs-toggle="popover" data-bs-placement="top" data-bs-html=true
+                      data-bs-trigger="focus" title="{{ morph.dictionary_form() }}"
+                      data-bs-content='<div class="container">
+                      <a type="button" class="btn-light btn-sm" href="https://jisho.org/search/{{ morph }}">Jisho</a>
+                      <a type="button" class="btn-light btn-sm" href="https://www.weblio.jp/content/{{ morph }}">Weblio</a>
+</div>'>{{ morph }}</a><!--
+             -->{% endfor %}<!--
+            --></div>
         {% endfor %}
     </div>
-    <div class="container">
-        <p id="page-count">Page {{ page_number + 1 }}/{{ page_count }}</p>
+
+
+
+
+    <!-- Page Counter -->
+    <div class="d-flex justify-content-center">
+        <div class="p-2">
+            <a class="btn btn-sm btn-light {% if page_number == 0 %} disabled{% endif %}"
+               href="{{ url_for('show_story', story_name=story_name, page_number=1) }}"><i
+                    class="bi bi-chevron-bar-left"></i></a>
+        </div>
+        <div class="p-2">
+            <!-- Should subtract 1 but that is already done show_story!-->
+            <a class="btn btn-sm btn-light {% if page_number == 0 %} disabled{% endif %}"
+               href="{{ url_for('show_story', story_name=story_name, page_number=page_number) }}"><i
+                    class="bi bi-chevron-left"></i></a>
+        </div>
+        <div class="p-2">
+            <p id="page-count">Page {{ page_number + 1 }}/{{ page_count }}</p>
+        </div>
+        <div class="p-2">
+            <!-- Should add 1 but 1 is subtracted in show_stories so we need to add 2!-->
+            <a class="btn btn-sm btn-light {% if page_number == page_count - 1 %} disabled{% endif %}"
+               href="{{ url_for('show_story', story_name=story_name, page_number=page_number + 2) }}"><i
+                    class="bi bi-chevron-right"></i></a>
+        </div>
+        <div class="p-2">
+            <a class="btn btn-sm btn-light {% if page_number == page_count - 1 %} disabled{% endif %}"
+               href="{{ url_for('show_story', story_name=story_name, page_number=page_count) }}"><i
+                    class="bi bi-chevron-bar-right"></i></a>
+        </div>
 
     </div>
+    <script>var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+        return new bootstrap.Popover(popoverTriggerEl)
+    })
+    </script>
 {% endblock %}

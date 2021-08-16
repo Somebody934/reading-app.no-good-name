@@ -1,4 +1,13 @@
 {% extends "base.html" %}
+{% block head %}
+    {{ super() }}
+    <!-- Google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;300;400;500;600;700;900&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="../static/style/home.css">
+{% endblock %}
 {% block navbar %}
     {{ super() }}
 {% endblock %}
@@ -7,11 +16,11 @@
     <div class="row" style="padding: 3rem">
         {% for story in stories %}
             <div class="col-lg-3 col-sm-6 col-md-4" style="padding: 0.5rem">
-                <div class="card">
+                <div class="card read-button">
                     <div class="card-body">
-                        <h5 class="card-title">{{ story.split(".")[0] }}</h5>
+                        <h5 class="card-title story-title">{{ story.split(".")[0] }}</h5>
                         <a href="{{ url_for("show_story", story_name=story, page_number=1) }}"
-                           class="btn btn-primary">Read</a>
+                           class="btn btn-primary ">Read</a>
                     </div>
                 </div>
             </div>

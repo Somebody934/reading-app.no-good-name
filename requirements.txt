@@ -2,3 +2,5 @@ Flask==2.0.0
 Jinja2==3.0.0
 Flask-BS4==5.0.0.1
 python-dotenv==0.19.0
+SudachiPy==0.5.2
+SudachiDict-full

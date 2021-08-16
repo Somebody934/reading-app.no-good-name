@@ -1,0 +1,9 @@
+.story-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 2rem;
+    padding: 5%;
+}
+.read-button {
+    text-align: center;
+    child-align: middle;
+}
