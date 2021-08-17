@@ -21,12 +21,17 @@
         {% for paragraph in paragraphs %}
             <div><!--
             -->{% for morph in paragraph %}<!--
-                --><a tabindex="0" data-bs-toggle="popover" data-bs-placement="top" data-bs-html=true
-                      data-bs-trigger="focus" title="{{ morph.dictionary_form() }}"
+                --><a tabindex="0"
+                      data-bs-toggle="popover"
+                      data-bs-placement="top"
+                      data-bs-html=true
+                      data-bs-trigger="focus"
+                      title="{{ morph.dictionary_form() }}"
                       data-bs-content='<div class="container">
-                      <a type="button" class="btn-light btn-sm" href="https://jisho.org/search/{{ morph }}">Jisho</a>
-                      <a type="button" class="btn-light btn-sm" href="https://www.weblio.jp/content/{{ morph }}">Weblio</a>
-</div>'>{{ morph }}</a><!--
+                                        <div class="hiragana">{{ morph.reading_form() }}</div>
+                                        <a type="button" class="btn-light btn-sm dict-button" href="https://jisho.org/search/{{ morph }}">Jisho</a>
+                                        <a type="button" class="btn-light btn-sm dict-button" href="https://www.weblio.jp/content/{{ morph }}">Weblio</a>
+                                        </div>'>{{ morph }}</a><!--
              -->{% endfor %}<!--
             --></div>
         {% endfor %}

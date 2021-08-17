@@ -8,7 +8,10 @@
 
 }
 
-
+.hiragana {
+    text-align: center;
+    padding-bottom: 16px;
+}
 #page-count {
     text-align: center;
 }
