@@ -8,9 +8,13 @@ app = Flask(__name__)
 Bootstrap(app)
 
 stories = {}
+
+
 def env(value, key):
     return os.getenv(key, value)
 
+
+parser = Parser()
 
 app.add_template_filter(env)
 
@@ -44,16 +48,28 @@ def show_story(story_name, page_number):
                 pages.append(page)
                 page_count = 0
             else:
-                pages.append(Parser().parse_list(page))
+                pages.append(parser.parse_list(page))
                 page_count = len(paragraph)
                 page = [paragraph]
         if page:
-            pages.append(Parser().parse_list(page))
+            pages.append(parser.parse_list(page))
         stories[story_name] = pages
     else:
         pages = stories[story_name]
 
-    return render_template("story.html", title=APP_NAME, story_name=story_name, page_number=page_number, paragraphs=pages[page_number], page_count=len(pages))
+    return render_template("story.html", title=APP_NAME, story_name=story_name, page_number=page_number,
+                           paragraphs=pages[page_number], page_count=len(pages), dict=parser.dict)
+
+
+abc = []
+counter = 0
+
+
+@app.context_processor
+def add_to_abc(number):
+    global counter
+    counter = number
+    return number + 1
 
 
 @app.route("/login")
@@ -71,6 +87,12 @@ def register():
 @app.route("/about")
 def about():
     # TODO create about page
+    return redirect(url_for("home"))
+
+
+@app.route("/add")
+def add_story():
+    # TODO add add story
     return redirect(url_for("home"))
 
 

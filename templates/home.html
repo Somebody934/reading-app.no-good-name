@@ -13,10 +13,10 @@
 {% endblock %}
 {% block body %}
     {{ super() }}
-    <div class="row" style="padding: 3rem">
+    <div class="row home-row" >
         {% for story in stories %}
-            <div class="col-lg-3 col-sm-6 col-md-4" style="padding: 0.5rem">
-                <div class="card read-button">
+            <div class="col-lg-3 col-sm-6 col-md-4 cards">
+                <div class="card read-button rounded-pill ">
                     <div class="card-body">
                         <h5 class="card-title story-title">{{ story.split(".")[0] }}</h5>
                         <a href="{{ url_for("show_story", story_name=story, page_number=1) }}"
@@ -25,6 +25,15 @@
                 </div>
             </div>
         {% endfor %}
+        <div class="col-lg-3 col-sm-6 col-md-4 cards">
+                <div class="card read-button rounded-pill" id="add-new-story">
+                    <div class="card-body">
+                        <h5 class="card-title story-title">Add New Story</h5>
+                        <a href="{{ url_for("add_story") }}"
+                           class="btn btn-outline-primary ">Add</a>
+                    </div>
+                </div>
+            </div>
     </div>
 
 {% endblock %}

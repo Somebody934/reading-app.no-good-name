@@ -21,17 +21,30 @@
         {% for paragraph in paragraphs %}
             <div><!--
             -->{% for morph in paragraph %}<!--
-                --><a tabindex="0"
-                      data-bs-toggle="popover"
-                      data-bs-placement="top"
-                      data-bs-html=true
-                      data-bs-trigger="focus"
-                      title="{{ morph.dictionary_form() }}"
-                      data-bs-content='<div class="container">
-                                        <div class="hiragana">{{ morph.reading_form() }}</div>
-                                        <a type="button" class="btn-light btn-sm dict-button" href="https://jisho.org/search/{{ morph }}">Jisho</a>
-                                        <a type="button" class="btn-light btn-sm dict-button" href="https://www.weblio.jp/content/{{ morph }}">Weblio</a>
-                                        </div>'>{{ morph }}</a><!--
+                --><a {% if not dict[morph.dictionary_form()]["type"] in ['補助記号', '数詞', ] %}
+                tabindex="0"
+                data-bs-toggle="popover"
+                data-bs-placement="top"
+                data-bs-html=true
+                data-bs-trigger="float"
+                data-bs-template='   <div class="popover" role="tooltip">
+                                            <div class="popover-arrow"></div>
+                                            <h3 class="popover-header"></h3>
+                                            <div class="popover-body"></div>
+                                            <div style="overflow: unset;">
+
+                                                <a type="button" class="btn-light btn-sm dict-button" href="https://jisho.org/search/{{ morph.dictionary_form() }}">Jisho</a>
+                                                <a type="button" class="btn-light btn-sm dict-button" href="https://www.weblio.jp/content/{{ morph.dictionary_form() }}">Weblio</a>
+
+                                            </div>
+                                        </div>'
+                title="{{ morph.dictionary_form() }}"
+                data-bs-content='<div class="container">
+                                        <div class="hiragana">{{ dict[morph.dictionary_form()]['reading'] }}</div>
+                                        </div>'
+                class="{{ dict[morph.dictionary_form()]['style'] }} {{ dict[morph.dictionary_form()]['known'] }}"><!--
+                    -->{% endif %}<!--
+                                        -->{{ morph }}</a><!--
              -->{% endfor %}<!--
             --></div>
         {% endfor %}

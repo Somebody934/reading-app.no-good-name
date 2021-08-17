@@ -3,7 +3,19 @@
     font-size: 2rem;
     padding: 5%;
 }
+
+.home-row {
+    padding: 3rem;
+    margin: 0
+
+}
+.cards {
+    padding: 0.5rem;
+}
 .read-button {
     text-align: center;
     child-align: middle;
+}
+#add-new-story {
+    border-style: dotted;
 }

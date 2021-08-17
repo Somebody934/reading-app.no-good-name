@@ -3,6 +3,7 @@
     font-size: 1.5rem;
 
 }
+
 .paragraph {
     font-family: 'Noto Sans JP', sans-serif;
 
@@ -10,8 +11,50 @@
 
 .hiragana {
     text-align: center;
-    padding-bottom: 16px;
 }
+
+.dict-button {
+    text-align: center;
+    font-size: 1rem;
+    margin: 0.5rem;
+}
+
+.popover {
+    padding-bottom: 10px;
+
+}
+
+a {
+    color: black;
+    text-decoration: none;
+}
+
+a:hover {
+    color: initial;
+}
+
+a.固有名詞:hover {
+    text-decoration: none;
+}
+
+a.固有名詞 {
+    color: green;
+    text-decoration: none;
+}
+
+/*a.補助記号*/
+
+a.known {
+    color: black;
+    text-decoration: none;
+
+}
+
+a.not-known {
+    color: darkblue;
+    text-decoration: none;
+}
+
 #page-count {
     text-align: center;
 }
