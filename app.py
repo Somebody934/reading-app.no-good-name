@@ -29,8 +29,6 @@ def context_processor():
     return context_dict
 
 
-stories = {}
-
 # Databases
 Base = declarative_base()
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///base.db"
@@ -59,7 +57,6 @@ def login_required(function):
     @wraps(function)
     def wrapper_function(*args, **kwargs):
         if current_user.is_authenticated:
-            print(1)
             return function(*args, **kwargs)
         else:
             return redirect(url_for("about"))
@@ -101,31 +98,26 @@ def show_story(story_name, page_number):
     if page_number == 0:
         return "Error"
     page_number -= 1
-    if not (story_name in stories):
-        with open(f"static/users/{current_user.id}/stories/{story_name}", "r", encoding="utf-8") as file:
-            text = file.read()
-        k = text.replace("\n\n", "\n").replace("\u3000", "")
-        paragraphs = k.split("\n")
-        pages = []
-        page = []
-        page_count = 0
-        i = 0
-        for paragraph in paragraphs:
-            page_count += len(paragraph)
-            if page_count < 1000:
-                page.append(paragraph)
-            elif page == len(paragraph):
-                pages.append(page)
-                page_count = 0
-            else:
-                pages.append(parser.parse_list(page))
-                page_count = len(paragraph)
-                page = [paragraph]
-        if page:
+    with open(f"static/users/{current_user.id}/stories/{story_name}", "r", encoding="utf-8") as file:
+        text = file.read()
+    k = text.replace("\n\n", "\n").replace("\u3000", "")
+    paragraphs = k.split("\n")
+    pages = []
+    page = []
+    page_count = 0
+    for paragraph in paragraphs:
+        page_count += len(paragraph)
+        if page_count < 1000:
+            page.append(paragraph)
+        elif page == len(paragraph):
+            pages.append(page)
+            page_count = 0
+        else:
             pages.append(parser.parse_list(page))
-        stories[story_name] = pages
-    else:
-        pages = stories[story_name]
+            page_count = len(paragraph)
+            page = [paragraph]
+    if page:
+        pages.append(parser.parse_list(page))
 
     return render_template("story.html", title=APP_NAME, story_name=story_name, page_number=page_number,
                            paragraphs=pages[page_number], page_count=len(pages), dict=parser.dict)
@@ -142,7 +134,8 @@ def login():
             if check_password_hash(user.password, password):
                 flask.flash("Logged in successfully")
                 login_user(user)
-
+                global parser
+                parser.dict = parser.parse_known(current_user.id)
                 return redirect(url_for("home"))
             else:
                 form.password.errors.append("Password is wrong")
@@ -159,20 +152,19 @@ def logout():
     return redirect(url_for("about"))
 
 
-@app.route("/profile", methods=["GET","POST"])
+@app.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
     form = KnownForm()
     if form.validate_on_submit():
-        with open(f"static/users/{current_user.id}/data/known.txt", "r", encoding="utf-8") as file:
-            old_dict = parser.parse_known(current_user.id)
+        old_dict = parser.parse_known(current_user.id)
         text = form.text_block.data
         morphs = parser.parse_text(text)
         dict = parser.format_data(morphs)
         dict.update(old_dict)
-        parser.dict.update(dict)
         with open(f"static/users/{current_user.id}/data/known.txt", "w", encoding="utf-8") as file:
             file.write("\n".join(dict.keys()))
+        parser.add_known(user_id=current_user.id)
         return redirect(url_for("home"))
     return render_template("forms.html", form=form, form_use="Profile")
 
@@ -198,8 +190,9 @@ def register():
             os.mkdir(path)
             os.mkdir(path + "stories")
             os.mkdir(path + "data")
-            with open(path + "data/known.txt", "w", encoding="utf-8") as file:
+            with open(path + "data/known.txt", "w", encoding="utf-8"):
                 pass
+            parser.dict = {}
             flask.flash("Your registration was successful")
             login_user(new_user)
 
