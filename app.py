@@ -17,7 +17,10 @@ APP_NAME = "Riduridu"
 
 app = Flask(__name__)
 Bootstrap(app)
-app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "sqlite:///base.db")
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+uri = os.getenv("DATABASE_URL", "sqlite:///base.db")  # or other relevant config var
+if uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
 
 
 @app.context_processor
@@ -51,7 +54,6 @@ class Story(db.Model):
     filepath = db.Column(db.String, nullable=False, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = relationship("User", back_populates="stories")
-
 
 def login_required(function):
     @wraps(function)
