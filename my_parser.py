@@ -5,7 +5,8 @@ class Parser:
     def __init__(self):
         self.tokenizer = dictionary.Dictionary(dict_type="full").create()
         self.mode = tokenizer.Tokenizer.SplitMode.C
-        self.dict = self.add_known()
+        self.dict = {}
+
     def parse_text(self, text: str):
         morphs = self.tokenizer.tokenize(text, self.mode)
         return morphs
@@ -31,12 +32,15 @@ class Parser:
             }
         return dict
 
-    def add_known(self):
-        with open("static/data/known_words.txt","r", encoding="utf-8") as file:
+    def parse_known(self, user_id):
+        with open(f"static/users/{user_id}/data/known.txt", "r", encoding="utf-8") as file:
             text = file.read().replace("\n", " ")
             parsed_text = self.parse_text(text)
             dict = self.format_data(parsed_text, known="known")
         return dict
+
+    def add_known(self, user_id):
+        self.dict.update(self.parse_known(user_id))
 
 
 def config():
@@ -48,9 +52,8 @@ def config():
 if __name__ == "__main__":
     to, mode = config()
     prs = Parser()
-    prs.add_known()
     text = "頭は未だ何だか明瞭しない"
-    text_list =[text]
+    text_list = [text]
     m = to.tokenize(text, mode)
     # print(prs.format_data(m))
     # for word in m:

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% set title="About" %}
+
+
+{% block body %}
+    {{ super() }}
+    <div class="container">
+        <h1>About</h1>
+        <p>{{ APP_NAME }} is a web app made to help with reading japanese texts.</p>
+        <p>Built with flask as a exercise</p>
+        <p> It was inspired by <a href="https://www.japanese.io/">japanese.io</a>.</p>
+
+
+    </div>
+{% endblock %}

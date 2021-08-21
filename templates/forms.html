@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% set title=form_use %}
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="../static/style/base_file.css">
+{% endblock %}
+{% block body %}
+    {{ super() }}
+
+    <div class="container">
+        <h1> {{ form_use }}</h1>
+        <div class="col-xs-12 col-sm-9 col-md-6 col-lg-4"> {{ wtf.quick_form(form) }} </div>
+    </div>
+
+{% endblock %}

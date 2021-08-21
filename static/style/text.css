@@ -37,11 +37,6 @@ a.固有名詞:hover {
     text-decoration: none;
 }
 
-a.固有名詞 {
-    color: green;
-    text-decoration: none;
-}
-
 /*a.補助記号*/
 
 a.known {
@@ -52,6 +47,11 @@ a.known {
 
 a.not-known {
     color: darkblue;
+    text-decoration: none;
+}
+
+a.固有名詞 {
+    color: green;
     text-decoration: none;
 }
 

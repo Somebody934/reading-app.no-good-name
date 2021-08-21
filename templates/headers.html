@@ -1,7 +1,7 @@
 {% block navbar %}
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark heading_space">
         <div class="container-fluid">
-            <a class="navbar-brand abs" href="{{url_for("home")}}">{{ title }}</a>
+            <a class="navbar-brand abs" href="{{url_for("home")}}">{{ APP_NAME }}</a>
             <button class="ms-auto navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -9,12 +9,21 @@
             </button>
             <span class="collapse navbar-collapse ms-auto" id="navbarSupportedContent">
             <ul class=" navbar-nav ms-auto">
+                {% if not user_auth %}
                 <li class="nav-item">
                     <a class="nav-link" aria-current="page" href="{{url_for("login")}}">Login</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{url_for("register")}}">Register</a>
                 </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for("logout")}}">Logout</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for("profile")}}">Profile</a>
+                </li>
+                {% endif %}
                 <li class="nav-item">
                     <a class="nav-link" href="{{url_for("about")}}">About</a>
                 </li>
