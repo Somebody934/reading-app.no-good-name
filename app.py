@@ -21,6 +21,7 @@ app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 uri = os.getenv("DATABASE_URL", "sqlite:///base.db")  # or other relevant config var
 if uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
+    print(uri)
 
 
 @app.context_processor
