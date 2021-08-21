@@ -17,7 +17,7 @@ APP_NAME = "Riduridu"
 
 app = Flask(__name__)
 Bootstrap(app)
-app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "sqlite:///base.db")
 
 
 @app.context_processor
@@ -31,7 +31,7 @@ def context_processor():
 
 # Databases
 Base = declarative_base()
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///base.db"
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
