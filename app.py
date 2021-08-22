@@ -18,24 +18,14 @@ APP_NAME = "Riduridu"
 app = Flask(__name__)
 Bootstrap(app)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+
+Base = declarative_base()
+
+# Databases
 uri = os.getenv("DATABASE_URL", "sqlite:///base.db")  # or other relevant config var
 if uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
-    print(uri)
-
-
-@app.context_processor
-def context_processor():
-    context_dict = {
-        "APP_NAME": APP_NAME,
-        "user_auth": current_user.is_authenticated
-    }
-    return context_dict
-
-
-# Databases
-Base = declarative_base()
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
+app.config['SQLALCHEMY_DATABASE_URI'] = uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -56,6 +46,7 @@ class Story(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = relationship("User", back_populates="stories")
 
+
 def login_required(function):
     @wraps(function)
     def wrapper_function(*args, **kwargs):
@@ -67,10 +58,19 @@ def login_required(function):
     return wrapper_function
 
 
+@app.context_processor
+def context_processor():
+    context_dict = {
+        "APP_NAME": APP_NAME,
+        "user_auth": current_user.is_authenticated
+    }
+    return context_dict
+
+
 db.create_all()
 
-# Auth
 login_manager = LoginManager()
+# Auth
 login_manager.init_app(app)
 
 
