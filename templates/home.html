@@ -22,6 +22,8 @@
                         <h5 class="card-title story-title">{{ story.split(".")[0] }}</h5>
                         <a href="{{ url_for("show_story", story_name=story, page_number=1) }}"
                            class="btn btn-primary ">Read</a>
+                        <a href="{{ url_for("delete", id=story ,del_key=del_key, type="story") }}"
+                           class="btn btn-outline-danger ">Delete</a>
                     </div>
                 </div>
             </div>

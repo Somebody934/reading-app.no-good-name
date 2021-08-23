@@ -34,7 +34,9 @@ class Parser:
             }
         return dict
 
-    def parse_known(self, user_id, data=None):
+    def parse_known(self, user_id, data=None, known="known"):
+        print(known)
+        print("pn")
         if data is None:
             path = "data/known.txt"
             data = read_file(user_id=user_id, path=path).get("known")
@@ -42,11 +44,13 @@ class Parser:
                 return {}
         text = data.replace("\n", " ")
         parsed_text = self.parse_text(text)
-        dict = self.format_data(parsed_text, known="known")
+        dict = self.format_data(parsed_text, known=known)
         return dict
 
-    def add_known(self, user_id, data=None):
-        pn = self.parse_known(user_id, data)
+    def add_known(self, user_id, data=None, known="a"):
+        print(known)
+        pn = self.parse_known(user_id, data, known)
+        print(pn)
         self.dict = {**self.dict, **pn}
         file = "\n".join([key for (key, value) in self.dict.items() if value["known"] == "known"])
         path = "data/known.txt"

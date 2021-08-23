@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% set title="Profile" %}
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="../static/style/base_file.css">
+{% endblock %}
+{% block body %}
+    {{ super() }}
+
+    <div class="container">
+        <h1> {{ form_use }}</h1>
+        <div class="col-xs-12 col-sm-9 col-md-6 col-lg-4">
+            <form class="form form-horizontal" method="post" role="form">
+
+
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ form.text_block.label(class_="form-label") }}
+                    {{ form.text_block(class_="form-control") }}
+
+                    {% if form.text_block.errors %}
+                        <ul class="errors">
+                            {% for error in form.text_block %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                <div class="mb-3 row">
+                    <div class="col">
+                        {{ form.submit(class_="btn btn-primary") }}
+                    </div>
+                    <div class="col">
+                        {{ form.remove(class_="btn btn-warning") }}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <hr class="container">
+    <div class="container">
+        <a href="{{ url_for("delete", type="user", id="id" ,del_key=del_key) }}"
+           class="btn btn-outline-danger">Delete Profile</a>
+    </div>
+{% endblock %}

@@ -23,5 +23,6 @@ class TextForm(FlaskForm):
 
 
 class KnownForm(FlaskForm):
-    text_block = TextAreaField("Paste known words here")
+    text_block = TextAreaField("Paste words here")
     submit = SubmitField("Add words to known")
+    remove = SubmitField("Remove words from known")

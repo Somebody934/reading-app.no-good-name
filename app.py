@@ -10,19 +10,17 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from cloud_storage import upload_file, read_file
+from cloud_storage import upload_file, read_file, delete_file
 from forms import LoginForm, RegisterForm, TextForm, KnownForm
 from my_parser import Parser
 
 APP_NAME = "Riduridu"
-
+DELETE_KEY = os.getenv("DELETE_KEY", "rand delete om key" )
 app = Flask(__name__)
 Bootstrap(app)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
 Base = declarative_base()
-
-
 
 # Databases
 uri = os.getenv("DATABASE_URL", "sqlite:///base.db")  # or other relevant config var
@@ -85,6 +83,14 @@ def user_loader(user_id):
 parser = Parser()
 
 
+## START
+
+# Main
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
+
 @app.route("/")
 def main_page():
     return redirect(url_for("about"))
@@ -96,7 +102,23 @@ def home():
     # TODO make it more beautiful
     filenames = read_file(user_id=current_user.id, path="stories").keys()
     stories = [name.split("/")[-1] for name in filenames]
-    return render_template("home.html", title=APP_NAME, stories=stories)
+    return render_template("home.html", title=APP_NAME, stories=stories, del_key=DELETE_KEY)
+
+
+@app.route("/profile", methods=["GET", "POST"])
+@login_required
+def profile():
+    form = KnownForm()
+    if form.validate_on_submit():
+        if form.submit.data:
+            text = form.text_block.data
+            parser.add_known(user_id=current_user.id, data=text, known="known")
+        elif form.remove.data:
+            text = form.text_block.data
+            parser.add_known(known="not-known", user_id=current_user.id, data=text)
+        print(parser.dict)
+        return redirect(url_for("home"))
+    return render_template("profile.html", form=form, del_key=DELETE_KEY)
 
 
 @app.route('/<story_name>/<int:page_number>')
@@ -159,19 +181,6 @@ def logout():
     return redirect(url_for("about"))
 
 
-@app.route("/profile", methods=["GET", "POST"])
-@login_required
-def profile():
-    form = KnownForm()
-    if form.validate_on_submit():
-        text = form.text_block.data
-        parser.add_known(user_id=current_user.id, data=text)
-        # with open(f"static/users/{current_user.id}/data/known.txt", "w", encoding="utf-8") as file:
-        #     file.write("\n".join(dict.keys()))
-        return redirect(url_for("home"))
-    return render_template("forms.html", form=form, form_use="Profile")
-
-
 @app.route("/register", methods=["GET", "POST"])
 def register():
     form = RegisterForm()
@@ -189,11 +198,6 @@ def register():
 
             return redirect(url_for("home"))
     return render_template("forms.html", form=form, form_use="Register")
-
-
-@app.route("/about")
-def about():
-    return render_template("about.html")
 
 
 @app.route("/add", methods=["GET", "POST"])
@@ -216,6 +220,25 @@ def add_story():
             flask.flash("Story added successfully")
 
     return render_template("forms.html", form=form, form_use="Add new story")
+
+
+@app.route("/delete/<type>/<id>/<del_key>")
+def delete(type, del_key, id=None):
+    if type == "story":
+        name = id.split(".")[0]
+        remove = Story.query.filter_by(title=name).first()
+        path = f"stories/{name}.txt"
+        print(path)
+        delete_file(user_id=current_user.id, path=path)
+    elif type == "user":
+        id = current_user.id
+        remove = User.query.get(id)
+        logout_user()
+    else:
+        return "Error"
+    db.session.delete(remove)
+    db.session.commit()
+    return redirect(url_for("about"))
 
 
 if __name__ == '__main__':
