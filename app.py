@@ -15,7 +15,7 @@ from forms import LoginForm, RegisterForm, TextForm, KnownForm
 from my_parser import Parser
 
 APP_NAME = "Riduridu"
-DELETE_KEY = os.getenv("DELETE_KEY", "rand delete om key" )
+DELETE_KEY = os.getenv("DELETE_KEY", "rand delete om key")
 app = Flask(__name__)
 Bootstrap(app)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")

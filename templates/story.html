@@ -14,6 +14,21 @@
 
 {% set popover = '' %}
 
+{% macro popover_template(morph) -%}
+    <div class="popover" role="tooltip">
+        <div class="popover-arrow"></div>
+        <h3 class="popover-header"></h3>
+        <div class="popover-body"></div>
+        <div style="overflow: unset;">
+
+            <a type="button" class="btn-light btn-sm dict-button"
+               href="https://jisho.org/search/{{ morph.dictionary_form() }}">Jisho</a>
+            <a type="button" class="btn-light btn-sm dict-button"
+               href="https://www.weblio.jp/content/{{ morph.dictionary_form() }}">Weblio</a>
+        </div>
+    </div>
+{% endmacro %}
+
 {% block body %}
     {{ super() }}
     <!-- Text -->
@@ -27,18 +42,8 @@
                 data-bs-placement="top"
                 data-bs-html=true
                 data-bs-trigger="float"
-                data-bs-template='   <div class="popover" role="tooltip">
-                                            <div class="popover-arrow"></div>
-                                            <h3 class="popover-header"></h3>
-                                            <div class="popover-body"></div>
-                                            <div style="overflow: unset;">
-
-                                                <a type="button" class="btn-light btn-sm dict-button" href="https://jisho.org/search/{{ morph.dictionary_form() }}">Jisho</a>
-                                                <a type="button" class="btn-light btn-sm dict-button" href="https://www.weblio.jp/content/{{ morph.dictionary_form() }}">Weblio</a>
-
-                                            </div>
-                                        </div>'
-                title="{{ morph.dictionary_form() }}"
+                data-bs-template='{{ popover_template(morph) }}'
+                        title="{{ morph.dictionary_form() }}"
                 data-bs-content='<div class="container">
                                         <div class="hiragana">{{ dict[morph.dictionary_form()]['reading'] }}</div>
                                         </div>'
