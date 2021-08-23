@@ -163,8 +163,7 @@ def login():
             if check_password_hash(user.password, password):
                 flask.flash("Logged in successfully")
                 login_user(user)
-                global parser
-                parser.dict = parser.parse_known(current_user.id)
+                parser.add_known(current_user.id)
                 return redirect(url_for("home"))
             else:
                 form.password.errors.append("Password is wrong")
