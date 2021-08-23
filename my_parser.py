@@ -1,5 +1,7 @@
 from sudachipy import tokenizer, dictionary
 
+from cloud_storage import upload_file, read_file
+
 
 class Parser:
     def __init__(self):
@@ -32,15 +34,23 @@ class Parser:
             }
         return dict
 
-    def parse_known(self, user_id):
-        with open(f"static/users/{user_id}/data/known.txt", "r", encoding="utf-8") as file:
-            text = file.read().replace("\n", " ")
-            parsed_text = self.parse_text(text)
-            dict = self.format_data(parsed_text, known="known")
+    def parse_known(self, user_id, data=None):
+        if data is None:
+            path = "data/known.txt"
+            data = read_file(user_id=user_id, path=path).get("known")
+            if data is None:
+                return {}
+        text = data.replace("\n", " ")
+        parsed_text = self.parse_text(text)
+        dict = self.format_data(parsed_text, known="known")
         return dict
 
-    def add_known(self, user_id):
-        self.dict.update(self.parse_known(user_id))
+    def add_known(self, user_id, data=None):
+        pn = self.parse_known(user_id, data)
+        self.dict = {**self.dict, **pn}
+        file = "\n".join([key for (key, value) in self.dict.items() if value["known"] == "known"])
+        path = "data/known.txt"
+        upload_file(user_id=user_id, text=file, path=path)
 
 
 def config():

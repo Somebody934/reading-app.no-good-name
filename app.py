@@ -10,6 +10,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from cloud_storage import upload_file, read_file
 from forms import LoginForm, RegisterForm, TextForm, KnownForm
 from my_parser import Parser
 
@@ -20,6 +21,8 @@ Bootstrap(app)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
 Base = declarative_base()
+
+
 
 # Databases
 uri = os.getenv("DATABASE_URL", "sqlite:///base.db")  # or other relevant config var
@@ -91,8 +94,9 @@ def main_page():
 @login_required
 def home():
     # TODO make it more beautiful
-    filenames = os.listdir(f'static/users/{current_user.id}/stories')
-    return render_template("home.html", title=APP_NAME, stories=filenames)
+    filenames = read_file(user_id=current_user.id, path="stories").keys()
+    stories = [name.split("/")[-1] for name in filenames]
+    return render_template("home.html", title=APP_NAME, stories=stories)
 
 
 @app.route('/<story_name>/<int:page_number>')
@@ -101,8 +105,8 @@ def show_story(story_name, page_number):
     if page_number == 0:
         return "Error"
     page_number -= 1
-    with open(f"static/users/{current_user.id}/stories/{story_name}", "r", encoding="utf-8") as file:
-        text = file.read()
+    path = f"stories/{story_name}"
+    text = read_file(user_id=current_user.id, path=path).get(story_name).decode("utf-8")
     k = text.replace("\n\n", "\n").replace("\u3000", "")
     paragraphs = k.split("\n")
     pages = []
@@ -160,14 +164,10 @@ def logout():
 def profile():
     form = KnownForm()
     if form.validate_on_submit():
-        old_dict = parser.parse_known(current_user.id)
         text = form.text_block.data
-        morphs = parser.parse_text(text)
-        dict = parser.format_data(morphs)
-        dict.update(old_dict)
-        with open(f"static/users/{current_user.id}/data/known.txt", "w", encoding="utf-8") as file:
-            file.write("\n".join(dict.keys()))
-        parser.add_known(user_id=current_user.id)
+        parser.add_known(user_id=current_user.id, data=text)
+        # with open(f"static/users/{current_user.id}/data/known.txt", "w", encoding="utf-8") as file:
+        #     file.write("\n".join(dict.keys()))
         return redirect(url_for("home"))
     return render_template("forms.html", form=form, form_use="Profile")
 
@@ -184,18 +184,6 @@ def register():
             new_user = User(username=username, password=password)
             db.session.add(new_user)
             db.session.commit()
-            path = f"static/users/"
-            try:
-                os.mkdir(path)
-            except FileExistsError:
-                pass
-            path += f"{new_user.id}/"
-            os.mkdir(path)
-            os.mkdir(path + "stories")
-            os.mkdir(path + "data")
-            with open(path + "data/known.txt", "w", encoding="utf-8"):
-                pass
-            parser.dict = {}
             flask.flash("Your registration was successful")
             login_user(new_user)
 
@@ -218,8 +206,10 @@ def add_story():
             form.title.errors.append("Story with that title already exists")
         else:
             file = form.file.data
-            path = f"static/users/{current_user.id}/stories/{title}.txt"
-            file.save(dst=path)
+            path = f"stories/{title}.txt"
+            upload_file(user_id=current_user.id, text=file, path=path)
+            # path = f"static/users/{current_user.id}/stories/{title}.txt"
+            # file.save(dst=path)
             new_story = Story(title=title, filepath=path)
             db.session.add(new_story)
             db.session.commit()

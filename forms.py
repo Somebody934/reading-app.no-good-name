@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileRequired
+from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import StringField, PasswordField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired
 
@@ -18,7 +18,7 @@ class RegisterForm(FlaskForm):
 
 class TextForm(FlaskForm):
     title = StringField("Title", validators=[DataRequired()])
-    file = FileField(validators=[FileRequired()])
+    file = FileField(validators=[FileRequired(), FileAllowed(["txt"], "Only txt files")])
     submit = SubmitField("Add new story")
 
 
