@@ -43,7 +43,6 @@ class Story(db.Model):
     __tablename__ = "story"
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, nullable=False)
-    filepath = db.Column(db.String, nullable=False, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = relationship("User", back_populates="stories")
 
@@ -127,7 +126,7 @@ def show_story(story_name, page_number):
         return "Error"
     page_number -= 1
     path = f"stories/{story_name}"
-    text = read_file(user_id=current_user.id, path=path).get(story_name).decode("utf-8")
+    text = read_file(user_id=current_user.id, path=path).get(story_name)
     k = text.replace("\n\n", "\n").replace("\u3000", "")
     paragraphs = k.split("\n")
     pages = []
@@ -175,6 +174,8 @@ def login():
 @app.route('/logout')
 @login_required
 def logout():
+    global parser
+    parser = Parser()
     logout_user()
     return redirect(url_for("about"))
 
@@ -204,7 +205,7 @@ def add_story():
     form = TextForm()
     if form.validate_on_submit():
         title = form.title.data
-        if Story.query.filter_by(title=title).first():
+        if Story.query.filter_by(title=title, user_id=current_user.id).first():
             form.title.errors.append("Story with that title already exists")
         else:
             file = form.file.data
@@ -212,7 +213,7 @@ def add_story():
             upload_file(user_id=current_user.id, text=file, path=path)
             # path = f"static/users/{current_user.id}/stories/{title}.txt"
             # file.save(dst=path)
-            new_story = Story(title=title, filepath=path)
+            new_story = Story(title=title, user_id=current_user.id)
             db.session.add(new_story)
             db.session.commit()
             flask.flash("Story added successfully")
@@ -235,7 +236,7 @@ def delete(type, del_key, id=None):
         return "Error"
     db.session.delete(remove)
     db.session.commit()
-    return redirect(url_for("about"))
+    return redirect(url_for("home"))
 
 
 if __name__ == '__main__':
