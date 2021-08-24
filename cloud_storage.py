@@ -1,5 +1,6 @@
-import boto3
 import os
+
+import boto3
 
 # FILE STORAGE
 
@@ -26,13 +27,14 @@ def read_file(user_id, path):
         key = obj.key
         body = obj.get()['Body'].read()
         last_part = key.split("/")[-1]
-        story_dict[last_part] = body
+        story_dict[last_part] = body.decode("utf-8")
     return story_dict
 
 
 def upload_file(user_id, path, text):
     full_path = s3_path + f"/users/{user_id}/" + path
     s3_client.put_object(Body=text, Bucket=bucket_name, Key=full_path)
+
 
 def delete_file(user_id, path):
     full_path = s3_path + f"/users/{user_id}/" + path

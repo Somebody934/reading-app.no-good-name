@@ -116,7 +116,6 @@ def profile():
         elif form.remove.data:
             text = form.text_block.data
             parser.add_known(known="not-known", user_id=current_user.id, data=text)
-        print(parser.dict)
         return redirect(url_for("home"))
     return render_template("profile.html", form=form, del_key=DELETE_KEY)
 
@@ -161,9 +160,9 @@ def login():
         if user:
             password = form.password.data
             if check_password_hash(user.password, password):
-                flask.flash("Logged in successfully")
                 login_user(user)
                 parser.add_known(current_user.id)
+                flask.flash("Logged in successfully")
                 return redirect(url_for("home"))
             else:
                 form.password.errors.append("Password is wrong")
@@ -227,7 +226,6 @@ def delete(type, del_key, id=None):
         name = id.split(".")[0]
         remove = Story.query.filter_by(title=name).first()
         path = f"stories/{name}.txt"
-        print(path)
         delete_file(user_id=current_user.id, path=path)
     elif type == "user":
         id = current_user.id
@@ -241,4 +239,8 @@ def delete(type, del_key, id=None):
 
 
 if __name__ == '__main__':
+
+    if current_user:
+        if current_user.is_authenticated:
+            parser.add_known(current_user.id)
     app.run(debug=True)
